@@ -1,5 +1,6 @@
 ---
-title: "fantasy-football"
+title: "Fantasy Football"
+author: "Luke Thomas"
 output: html_document
 ---
 
@@ -7,24 +8,56 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+```{r eval = FALSE}
+library(usethis)
+use_git_config(user.name= "LukeT33", user.email="ldt19@duke.edu")
 ```
 
-test line
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r setup, include = FALSE}
+library(tidyverse)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r sites}
+targets <- read_html("https://www.fantasypros.com/nfl/reports/targets/")
+pointsallowed <- read_html("https://www.fantasypros.com/nfl/points-allowed.php")
+```
+
+```{r teams}
+teams <- pointsallowed %>%
+  html_nodes("#data a") %>%
+  html_text()
+```
+
+```{r qb-points-allowed}
+qb_points_allowed <- pointsallowed %>%
+  html_nodes(".center:nth-child(3) span") %>%
+  html_text()
+```
+
+```{r rb-points-allowed}
+rb_points_allowed <- pointsallowed %>%
+  html_nodes(".center:nth-child(5) span") %>%
+  html_text
+```
+
+```{r}
+fantasy_points_allowed <-tibble(
+  team = teams,
+  QB_Points_Allowed = qb_points_allowed,
+  RB_Points_Allowed = rb_points_allowed
+)
+
+fantasy_points_allowed %>%
+  arrange(RB_Points_Allowed)
+```
+
+
+
+
+
+
+
+
+
+
+
